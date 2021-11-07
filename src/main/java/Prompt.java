@@ -10,25 +10,32 @@ public class Prompt {
     prompt.runPrompt();
   }
 
-  public void runPrompt() throws ParseException {
+  public void runPrompt() {
     printMenu();
     Scanner sc = new Scanner(System.in);
     Calendar cal = new Calendar();
 
-    while (true) {
+    boolean isLoop = true;
+    while (isLoop) {
       System.out.println("명령 (1, 2, 3, h, q)");
       System.out.print(" > ");
       String cmd = sc.next();
-      if (cmd.equals("1")) {
-        cmdRegister(sc, cal);
-      } else if (cmd.equals("2")) {
-        cmdSearch(sc, cal);
-      } else if (cmd.equals("3")) {
-        printCalendar(sc, cal);
-      } else if (cmd.equals("h")) {
-        printMenu();
-      } else if (cmd.equals("q")) {
-        break;
+      switch (cmd) {
+        case "1":
+          cmdRegister(sc, cal);
+          break;
+        case "2":
+          cmdSearch(sc, cal);
+          break;
+        case "3":
+          printCalendar(sc, cal);
+          break;
+        case "h":
+          printMenu();
+          break;
+        case "q":
+          isLoop = false;
+          break;
       }
     }
     System.out.println("Bye~");
@@ -44,22 +51,48 @@ public class Prompt {
     System.out.println("+------------------------+");
   }
 
-  private static void cmdRegister (Scanner sc, Calendar cal) throws ParseException {
+  public static int parseDay(String week) {
+    switch (week) {
+      case "su":
+        return 0;
+      case "mo":
+        return 1;
+      case "tu":
+        return 2;
+      case "we":
+        return 3;
+      case "th":
+        return 4;
+      case "fr":
+        return 5;
+      case "sa":
+        return 6;
+      default:
+        return 0;
+    }
+  }
+
+  private static void cmdRegister (Scanner sc, Calendar cal) {
     System.out.println("[새 일정 등록]");
     System.out.println("날짜를 입력해 주세요 (yyyy-MM-dd).");
     String date = sc.next();
     sc.nextLine();
     System.out.print("일정을 입력하세요.\n > ");
-    String plan = sc.nextLine();
+    String plan = sc.nextLine() + "\n";
     cal.registerPlan(date, plan);
 
     System.out.println("일정이 등록되었습니다.");
   }
 
-  private static void cmdSearch(Scanner sc, Calendar cal) throws ParseException {
+  private static void cmdSearch(Scanner sc, Calendar cal) {
     System.out.println("날짜를 입력해 주세요 (yyyy-MM-dd).");
     String date = sc.next();
-    System.out.println(cal.searchPlan(date));
+    PlanItem plan = cal.searchPlan(date);
+    if (plan != null) {
+      System.out.println(plan.detail);
+    } else {
+      System.out.println("일정이 없습니다.");
+    }
   }
 
   private static void printCalendar(Scanner sc, Calendar cal) {
